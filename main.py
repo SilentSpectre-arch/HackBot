@@ -1,4 +1,3 @@
-
 import sys
 import json
 import sqlite3
@@ -18,7 +17,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QPushButton, QTextBrowser,
     QLineEdit, QComboBox, QListWidget, QListWidgetItem,
     QFrame, QSplitter, QMessageBox, QProgressBar,
-    QSizePolicy, QInputDialog
+    QSizePolicy, QInputDialog,QFormLayout,QGroupBox,
+    QDoubleSpinBox,QSpinBox
 )
 
 API = "http://127.0.0.1:11434"
@@ -233,10 +233,11 @@ class AIWorker(QThread):
     failed = Signal(str)
     stopped = Signal()
 
-    def __init__(self, model, messages):
+    def __init__(self, model, messages, options=None):
         super().__init__()
         self.model = model
         self.messages = messages
+        self.options = options or {}
         self.stop_event = threading.Event()
         self.response = None
 
@@ -262,7 +263,7 @@ class AIWorker(QThread):
                     "model": self.model,
                     "messages": self.messages,
                     "stream": True,
-                    "options": {"temperature": 0.3}
+                    "options": self.options
                 },
                 stream=True,
                 timeout=(10, 120)
@@ -319,6 +320,8 @@ class AIWorker(QThread):
                     response.close()
                 except Exception:
                     pass
+
+
 
 
 # --------------------------------------------------
@@ -546,7 +549,7 @@ class Hackbot(QMainWindow):
                 border-radius: 3px;
             }
         """)
-
+        self.model_data = {}
         self.build_ui()
         self.refresh_models()
         self.refresh_conversations()
@@ -598,6 +601,70 @@ class Hackbot(QMainWindow):
         side.addWidget(self.refresh_btn)
 
         side.addSpacing(8)
+        #---
+
+        # تنظیمات هوش مصنوعی محلی
+        settings_box = QGroupBox("تنظیمات هوش مصنوعی")
+        settings_box.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        settings_layout = QFormLayout(settings_box)
+        settings_layout.setSpacing(8)
+
+        # نقش دستیار
+        self.role_combo = QComboBox()
+        self.role_combo.addItem("تحلیل‌گر امنیتی", "analyst")
+        self.role_combo.addItem("مدرس", "teacher")
+        self.role_combo.addItem("گزارش‌نویس", "reporter")
+        settings_layout.addRow("نقش دستیار:", self.role_combo)
+
+        # دمای پاسخ
+        self.temperature_spin = QDoubleSpinBox()
+        self.temperature_spin.setRange(0.0, 2.0)
+        self.temperature_spin.setSingleStep(0.1)
+        self.temperature_spin.setValue(0.3)
+        self.temperature_spin.setDecimals(1)
+        settings_layout.addRow("دما:", self.temperature_spin)
+
+        # حداکثر طول پاسخ
+        self.max_tokens_spin = QSpinBox()
+        self.max_tokens_spin.setRange(64, 16384)
+        self.max_tokens_spin.setSingleStep(256)
+        self.max_tokens_spin.setValue(2048)
+        settings_layout.addRow("حداکثر توکن:", self.max_tokens_spin)
+
+        # اندازه پنجره زمینه
+        self.context_spin = QSpinBox()
+        self.context_spin.setRange(512, 32768)
+        self.context_spin.setSingleStep(512)
+        self.context_spin.setValue(4096)
+        settings_layout.addRow("پنجره زمینه:", self.context_spin)
+
+        # پارامتر top_p
+        self.top_p_spin = QDoubleSpinBox()
+        self.top_p_spin.setRange(0.1, 1.0)
+        self.top_p_spin.setSingleStep(0.05)
+        self.top_p_spin.setValue(0.9)
+        self.top_p_spin.setDecimals(2)
+        settings_layout.addRow("Top-P:", self.top_p_spin)
+
+        # پارامتر top_k
+        self.top_k_spin = QSpinBox()
+        self.top_k_spin.setRange(1, 100)
+        self.top_k_spin.setValue(40)
+        settings_layout.addRow("Top-K:", self.top_k_spin)
+
+        side.addWidget(settings_box)
+
+        # اطلاعات مدل انتخاب‌شده
+        self.model_info = QLabel("اطلاعات مدل هنوز دریافت نشده است.")
+        self.model_info.setWordWrap(True)
+        self.model_info.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.model_info.setStyleSheet(
+            "color: #94a3b8; padding: 5px;"
+        )
+        side.addWidget(self.model_info)
+
+        self.models.currentTextChanged.connect(self.load_model_info)
+
 
         side.addWidget(QLabel("گفتگوهای ذخیره‌شده"))
 
@@ -898,9 +965,56 @@ class Hackbot(QMainWindow):
     # اتصال به Ollama
     # --------------------------------------------------
 
+    # def refresh_models(self):
+    #     self.refresh_btn.setEnabled(False)
+    #     self.status.setText("● در حال دریافت فهرست مدل‌ها...")
+    #     self.status.setStyleSheet("color: #f6c85f;")
+
+    #     try:
+    #         response = requests.get(
+    #             f"{API}/api/tags",
+    #             timeout=5
+    #         )
+    #         response.raise_for_status()
+
+    #         models = [
+    #             model["name"]
+    #             for model in response.json().get("models", [])
+    #         ]
+
+    #         previous = self.models.currentText()
+
+    #         self.models.clear()
+    #         self.models.addItems(models)
+
+    #         if previous:
+    #             index = self.models.findText(previous)
+    #             if index >= 0:
+    #                 self.models.setCurrentIndex(index)
+    #         elif models:
+    #             index = self.models.findText("llama3.2:latest")
+    #             self.models.setCurrentIndex(
+    #                 index if index >= 0 else 0
+    #             )
+
+    #         if models:
+    #             self.status.setText("● Ollama متصل است")
+    #             self.status.setStyleSheet("color: #45e69a;")
+    #         else:
+    #             self.status.setText("● هیچ مدلی نصب نشده است")
+    #             self.status.setStyleSheet("color: #f6c85f;")
+
+    #     except Exception as exc:
+    #         self.status.setText("● خطای اتصال به Ollama")
+    #         self.status.setStyleSheet("color: #ff7272;")
+    #         self.status_detail.setText(str(exc))
+
+    #     finally:
+    #         self.refresh_btn.setEnabled(True)
+
     def refresh_models(self):
         self.refresh_btn.setEnabled(False)
-        self.status.setText("● در حال دریافت فهرست مدل‌ها...")
+        self.status.setText("● در حال دریافت مدل‌ها...")
         self.status.setStyleSheet("color: #f6c85f;")
 
         try:
@@ -910,40 +1024,79 @@ class Hackbot(QMainWindow):
             )
             response.raise_for_status()
 
-            models = [
-                model["name"]
-                for model in response.json().get("models", [])
-            ]
+            models = response.json().get("models", [])
+            self.model_data = {
+                model["name"]: model
+                for model in models
+            }
 
             previous = self.models.currentText()
+            names = list(self.model_data.keys())
 
+            self.models.blockSignals(True)
             self.models.clear()
-            self.models.addItems(models)
+            self.models.addItems(names)
 
-            if previous:
-                index = self.models.findText(previous)
-                if index >= 0:
-                    self.models.setCurrentIndex(index)
-            elif models:
-                index = self.models.findText("llama3.2:latest")
-                self.models.setCurrentIndex(
-                    index if index >= 0 else 0
+            if previous in names:
+                self.models.setCurrentText(previous)
+            elif "llama3.2:latest" in names:
+                self.models.setCurrentText("llama3.2:latest")
+            elif names:
+                self.models.setCurrentIndex(0)
+
+            self.models.blockSignals(False)
+
+            if names:
+                self.status.setText(
+                    f"● اتصال برقرار است؛ {len(names)} مدل نصب شده"
                 )
-
-            if models:
-                self.status.setText("● Ollama متصل است")
                 self.status.setStyleSheet("color: #45e69a;")
+                self.load_model_info(self.models.currentText())
             else:
                 self.status.setText("● هیچ مدلی نصب نشده است")
-                self.status.setStyleSheet("color: #f6c85f;")
+                self.model_info.setText(
+                    "برای نصب مدل از دستور ollama pull استفاده کن."
+                )
 
         except Exception as exc:
-            self.status.setText("● خطای اتصال به Ollama")
+            self.models.blockSignals(False)
+            self.status.setText("● خطا در اتصال به Ollama")
             self.status.setStyleSheet("color: #ff7272;")
-            self.status_detail.setText(str(exc))
+            self.model_info.setText(str(exc))
 
         finally:
             self.refresh_btn.setEnabled(True)
+
+
+    def load_model_info(self, model_name):
+        if not model_name:
+            self.model_info.setText("مدلی انتخاب نشده است.")
+            return
+
+        item = self.model_data.get(model_name, {})
+        details = item.get("details", {})
+
+        size = item.get("size", 0)
+        size_text = (
+            f"{size / (1024 ** 3):.2f} گیگابایت"
+            if size else "نامشخص"
+        )
+
+        family = details.get("family", "نامشخص")
+        parameter_size = details.get(
+            "parameter_size", "نامشخص"
+        )
+        quantization = details.get(
+            "quantization_level", "نامشخص"
+        )
+
+        self.model_info.setText(
+            f"مدل فعال: {model_name}\n"
+            f"حجم فایل: {size_text}\n"
+            f"خانواده: {family}\n"
+            f"اندازه پارامترها: {parameter_size}\n"
+            f"کوانتیزه‌سازی: {quantization}"
+        )
 
     # --------------------------------------------------
     # ارسال، دریافت و توقف
@@ -1023,9 +1176,45 @@ class Hackbot(QMainWindow):
         "validation and remediation steps."
     )
 }   
+
+        options = {
+    "temperature": self.temperature_spin.value(),
+    "num_predict": self.max_tokens_spin.value(),
+    "num_ctx": self.context_spin.value(),
+    "top_p": self.top_p_spin.value(),
+    "top_k": self.top_k_spin.value(),
+}
+        # دستورالعمل نقش انتخاب‌شده
+        role = self.role_combo.currentData()
+
+        role_prompts = {
+            "analyst": (
+                "You are a cybersecurity analyst. Analyze security "
+                "findings, explain evidence, assess risks, and recommend "
+                "defensive remediation. Answer in Persian."
+            ),
+            "teacher": (
+                "You are a patient cybersecurity teacher. Explain "
+                "concepts step by step in Persian, using examples and "
+                "clear definitions appropriate for the learner."
+            ),
+            "reporter": (
+                "You are a cybersecurity report writer. Write structured "
+                "professional reports in Persian with an executive summary, "
+                "findings, severity, evidence, and remediation."
+            ),
+        }
+
+        system_message = {
+    "role": "system",
+    "content": role_prompts.get(role, role_prompts["analyst"])
+}
+
+
         self.worker = AIWorker(
     model=model,
-    messages=[system_message] + self.history.copy()
+    messages=[system_message] + self.history.copy(),
+    options=options
 )
 
         self.worker.token_received.connect(self.on_token)
