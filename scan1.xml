@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.991 scan initiated Sat Oct 24 13:21:26 2026 as: /usr/lib/nmap/nmap -&#45;privileged -sS -sC -p- -sV -oX scan1.xml 127.0.0.1 -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -&#45;privileged -sS -sC -p- -sV -oX scan1.xml 127.0.0.1" start="1792835486" startstr="Sat Oct 24 13:21:26 2026" version="7.991" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1792835486" endtime="1792835513"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+<hostname name="localhost" type="PTR"/>
+</hostnames>
+<ports><extraports state="closed" count="65534">
+<extrareasons reason="reset" count="65534" proto="tcp" ports="1-35650,35652-65535"/>
+</extraports>
+<port protocol="tcp" portid="35651"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" product="Golang net/http server" servicefp="SF-Port35651-TCP:V=7.991%I=7%D=10/24%Time=6ADC7FA5%P=x86_64-pc-linux-gnu%r(GenericLines,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(GetRequest,8F,&quot;HTTP/1\.0\x20404\x20Not\x20Found\r\nDate:\x20Sat,\x2024\x20Oct\x202026\x2009:51:33\x20GMT\r\nContent-Length:\x2019\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\n\r\n404:\x20Page\x20Not\x20Found&quot;)%r(HTTPOptions,8F,&quot;HTTP/1\.0\x20404\x20Not\x20Found\r\nDate:\x20Sat,\x2024\x20Oct\x202026\x2009:51:33\x20GMT\r\nContent-Length:\x2019\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\n\r\n404:\x20Page\x20Not\x20Found&quot;)%r(RTSPRequest,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(Help,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(SSLSessionReq,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(FourOhFourRequest,8F,&quot;HTTP/1\.0\x20404\x20Not\x20Found\r\nDate:\x20Sat,\x2024\x20Oct\x202026\x2009:51:48\x20GMT\r\nContent-Length:\x2019\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\n\r\n404:\x20Page\x20Not\x20Found&quot;)%r(LPDString,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(SIPOptions,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(Socks5,67,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request&quot;)%r(OfficeScan,A3,&quot;HTTP/1\.1\x20400\x20Bad\x20Request:\x20missing\x20required\x20Host\x20header\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request:\x20missing\x20required\x20Host\x20header&quot;);" method="probed" conf="10"><cpe>cpe:/a:golang:go</cpe></service><script id="http-title" output="Site doesn&apos;t have a title (text/plain; charset=utf-8)."></script><script id="fingerprint-strings" output="&#xa;  FourOhFourRequest: &#xa;    HTTP/1.0 404 Not Found&#xa;    Date: Sat, 24 Oct 2026 09:51:48 GMT&#xa;    Content-Length: 19&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    404: Page Not Found&#xa;  GenericLines, Help, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, Socks5: &#xa;    HTTP/1.1 400 Bad Request&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    Connection: close&#xa;    Request&#xa;  GetRequest, HTTPOptions: &#xa;    HTTP/1.0 404 Not Found&#xa;    Date: Sat, 24 Oct 2026 09:51:33 GMT&#xa;    Content-Length: 19&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    404: Page Not Found&#xa;  OfficeScan: &#xa;    HTTP/1.1 400 Bad Request: missing required Host header&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    Connection: close&#xa;    Request: missing required Host header"><elem key="FourOhFourRequest">&#xa;    HTTP/1.0 404 Not Found&#xa;    Date: Sat, 24 Oct 2026 09:51:48 GMT&#xa;    Content-Length: 19&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    404: Page Not Found</elem>
+<elem key="GenericLines, Help, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, Socks5">&#xa;    HTTP/1.1 400 Bad Request&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    Connection: close&#xa;    Request</elem>
+<elem key="GetRequest, HTTPOptions">&#xa;    HTTP/1.0 404 Not Found&#xa;    Date: Sat, 24 Oct 2026 09:51:33 GMT&#xa;    Content-Length: 19&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    404: Page Not Found</elem>
+<elem key="OfficeScan">&#xa;    HTTP/1.1 400 Bad Request: missing required Host header&#xa;    Content-Type: text/plain; charset=utf-8&#xa;    Connection: close&#xa;    Request: missing required Host header</elem>
+</script></port>
+</ports>
+<times srtt="3" rttvar="1" to="100000"/>
+</host>
+<runstats><finished time="1792835513" timestr="Sat Oct 24 13:21:53 2026" summary="Nmap done at Sat Oct 24 13:21:53 2026; 1 IP address (1 host up) scanned in 27.12 seconds" elapsed="27.12" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>
