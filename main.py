@@ -6,6 +6,8 @@ import threading
 import time
 import uuid
 from datetime import datetime
+from security_lab import SecurityLabDialog
+from security_tools import SecurityToolsDialog
 
 import requests
 import markdown
@@ -790,6 +792,28 @@ class Hackbot(QMainWindow):
         content.addLayout(input_row)
 
         outer.addWidget(panel, 1)
+
+        self.security_lab_btn = QPushButton("آزمایشگاه تحلیل امنیتی")
+        self.security_lab_btn.clicked.connect(self.open_security_lab)
+
+        side.addWidget(self.security_lab_btn)
+        # outer.addWidget(sidebar)
+
+        self.security_tools_btn = QPushButton(
+            "🧰 ابزارهای امنیتی کنترل‌شده"
+        )
+        self.security_tools_btn.clicked.connect(
+            self.open_security_tools
+        )
+        side.addWidget(self.security_tools_btn)
+    
+    def open_security_lab(self):
+        dialog = SecurityLabDialog(self)
+        dialog.exec()
+
+    def open_security_tools(self):
+        dialog = SecurityToolsDialog(self)
+        dialog.exec()
 
     # --------------------------------------------------
     # مدیریت گفتگوها
